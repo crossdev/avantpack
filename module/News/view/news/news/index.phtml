@@ -1,0 +1,88 @@
+<?php
+$title = 'News';
+$this->headTitle($title);
+?>
+<div id="side-left">
+    <h2><?php echo $this->translate('Archive')?></h2>
+    <ul>
+    <?php
+        foreach ($archive as $year=>$months) {
+            echo '<li>';
+            echo '<a href="/news/?year='.$this->escapeHtml($year).'">'.$this->escapeHtml($year).'</a>';
+            echo '<ul>';
+            foreach ($months as $month=>$num) {
+                echo '<li>';
+                $monthName = $this->translate(date('F',mktime(0,0,0,$month)));
+                echo '<a href="/news/?year='.$this->escapeHtml($year).
+                    '&month='.$this->escapeHtml($month).'">'.$monthName.'</a>('.$this->escapeHtml($num).')';
+                echo '</li>';
+            }
+            echo '</ul></li>';
+        }
+    ?>
+    </ul>
+    <h2><?php echo $this->translate('All themes')?></h2>
+    <ul>
+    <?php
+    foreach ($act_themes as $v) {
+        echo '<li>';
+        echo '<a href="/news/?theme='.$this->escapeHtml($v["theme_id"]).'">'.$this->escapeHtml($v["theme_title"]).'</a>('.$this->escapeHtml($v["c"]).')';
+        echo '</li>';
+    }
+    ?>
+    </ul>
+</div>
+<div id="content">
+    <h1><?php echo $this->translate($title)?></h1>
+    <p>
+        <a href="<?php echo $this->url('news', array('action'=>'add'));?>"><?php echo $this->translate('Add')?></a>
+    </p>
+
+    <?php foreach ($news as $new):?>
+        <div class="news-item">
+            <h5><?php echo $this->escapeHtml($new->title);?></h5>
+            <span><?php echo $this->escapeHtml($new->date);?></span> - <strong><?php echo $this->escapeHtml($themes[$new->theme_id]);?></strong>
+            <div>
+                <?php
+                    if (preg_match('/^<p>(.*)<\/p>/Uis', $new->text, $anons)) {
+                        echo $anons[0];
+                    } else {
+                        echo $new->text;
+                    };
+
+                ?>
+            </div>
+            <a href="<?php echo $this->url('news',
+                array('action'=>'detail', 'id' => $new->news_id));?>"><?php echo $this->translate('More')?></a>
+            <a href="<?php echo $this->url('news',
+                array('action'=>'edit', 'id' => $new->news_id));?>"><?php echo $this->translate('Edit')?></a>
+            <a href="<?php echo $this->url('news',
+                array('action'=>'delete', 'id' => $new->news_id));?>"><?php echo $this->translate('Delete')?></a>
+
+        </div>
+    <?php endforeach?>
+    <?php if (!empty($pager)):?>
+    <div class="pager">
+        <?php foreach($pager as $page) {
+            if ($page['active']=='Y') {
+                echo '<b>'.$page['page'].'</b>';
+            } else {
+                $arGet = array();
+                if (isset($page['year'])) {
+                    $arGet[] = 'year='.$page['year'];
+                }
+                if (isset($page['month'])) {
+                    $arGet[] = 'month='.$page['month'];
+                }
+                if (isset($page['theme'])) {
+                    $arGet[] = 'theme='.$page['theme'];
+                }
+                if (isset($page['page'])) {
+                    $arGet[] = 'page='.$page['page'];
+                }
+                echo '<a'.$class.' href="/news/?'.implode('&', $arGet).'">'.$page['page'].'</a>';
+            }
+        }?>
+    </div>
+    <?php endif;?>
+</div>

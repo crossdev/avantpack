@@ -1,0 +1,8 @@
+<?php
+$title = $id;
+$this->headTitle($title);
+?>
+<h1><?php echo $this->escapeHtml($new->title); ?></h1>
+<span><?php echo $this->escapeHtml($new->date);?></span> - <strong><?php echo $this->escapeHtml($themes[$new->theme_id]);?></strong>
+<div><?php echo $new->text;?></div>
+<a href="<?php echo $this->url('news')?>"><?php echo $this->translate('All news')?></a>
